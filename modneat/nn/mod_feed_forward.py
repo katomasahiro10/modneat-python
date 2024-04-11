@@ -67,7 +67,7 @@ class ModFeedForward(FeedForward):
         if(is_update):
             for node, modulatory_ratio, act_func, agg_func, bias, response, links in self.node_evals:
                 for i, w, eta, a, b, c, d, m_d in links:
-                    if(self.config.evoparam_mode == 'global'):
+                    if(self.config.evoparam_mode == 'global'): #グローバル値を利用するモードならば、各パラメータをグローバル値で上書きして計算に用いる。ローカル値利用モードならばこの処理は不要なのでスキップする
                         a, b, c, d, eta = self.global_params['a'], self.global_params['b'], self.global_params['c'], self.global_params['d'], self.global_params['eta']
                     #Soltoggioの設定に基づいて重みを更新
                     update_val = math.tanh (self.modulated_values[node] / 2.0) * \

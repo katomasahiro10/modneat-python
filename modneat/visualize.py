@@ -182,12 +182,13 @@ def draw_net(config, genome, view=False, filename=None, directory=None, node_nam
             width = str(0.1 + abs(cg.weight / 5.0))
             dot.edge(a, b, _attributes={'style': style, 'color': color, 'penwidth': width})
 
-    # draw global params
-    for gg in genome.global_params.values():
-        try:
-            dot.attr(label= f'eta: {gg.eta:.3} \n a: {gg.a:.3} \n b: {gg.b:.3} \n c: {gg.c:.3} \n d: {gg.d:.3} \n m_d: {gg.m_d:.3} ')
-        except:
-            pass
+    if config.evoparam_mode == 'global':
+        # draw global params
+        for gg in genome.global_params.values():
+            try:
+                dot.attr(label= f'eta: {gg.eta:.3} \n a: {gg.a:.3} \n b: {gg.b:.3} \n c: {gg.c:.3} \n d: {gg.d:.3} \n m_d: {gg.m_d:.3} ')
+            except:
+                pass
 
     dot.render(filename, directory, view=view)
 
