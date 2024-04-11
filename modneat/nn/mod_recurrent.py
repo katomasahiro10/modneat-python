@@ -22,6 +22,11 @@ class ModRecurrent(Recurrent):
             for node, ignored_modulatory_ratio, ignored_activation, ignored_aggregation, ignored_bias, ignored_response, links in self.node_evals:
                 v[node] = 0.0
                 for i, w in links: #NOTE: linksは対応する各ノードに対する入力リンクのリスト. iは入力ノード, wは重み
+                    # links = [
+                    #    (input_node_id, weight),
+                    #    (input_node_id, weight),
+                    #    ...
+                    # ]
                     v[i] = 0.0
 
         self.modulate_values = copy.copy(self.values[0])
