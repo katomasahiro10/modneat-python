@@ -2,10 +2,12 @@ import copy
 import math
 from modneat.graphs import required_for_output
 from modneat.genome import ModGenome
+from modneat.nn import Recurrent
 from modneat.nn.utils import weight_change
 
-class ModRecurrent(object):
-    def __init__(self, inputs, outputs, node_evals, global_params):
+class ModRecurrent(Recurrent):
+    def __init__(self, inputs, outputs, node_evals, global_params, config):
+        super().__init__(inputs, outputs, node_evals)
         self.input_nodes = inputs
         self.output_nodes = outputs
         self.node_evals = node_evals
@@ -17,18 +19,20 @@ class ModRecurrent(object):
             for k in list(inputs) + list(outputs):
                 v[k] = 0.0
 
-            for node, modulatory, ignored_activation, ignored_aggregation, ignored_bias, ignored_response, links in self.node_evals:
+            for node, ignored_modulatory_ratio, ignored_activation, ignored_aggregation, ignored_bias, ignored_response, links in self.node_evals:
                 v[node] = 0.0
-                for i, w in links:
+                for i, w in links: #NOTE: linksは対応する各ノードに対する入力リンクのリスト. iは入力ノード, wは重み
                     v[i] = 0.0
-        self.active = 0
 
-        self.modulate_values = copy.deepcopy(self.values[0])
-        self.modulated_values = copy.deepcopy(self.values[0])
+        self.modulate_values = copy.copy(self.values[0])
+        self.modulated_values = copy.copy(self.values[0])
+
+        self.activate = 0
+
 
     @staticmethod
     def genome_type():
-        return ModExHebbGenome
+        return ModGenome
 
     def reset(self):
         self.node_evals = copy.deepcopy(self.original_node_evals)
