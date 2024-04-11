@@ -42,8 +42,8 @@ class ModRecurrent(Recurrent):
     def reset(self):
         self.node_evals = copy.deepcopy(self.original_node_evals)
         self.values = [dict((k, 0.0) for k in v) for v in self.values]
-        self.modulate_values = copy.deepcopy(self.values[0])
-        self.modulated_values = copy.deepcopy(self.values[0])
+        self.modulate_values = copy.copy(self.values[0])
+        self.modulated_values = copy.copy(self.values[0])
         self.active = 0
 
     def activate(self, inputs):
