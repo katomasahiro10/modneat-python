@@ -51,7 +51,7 @@ class ModRecurrent(Recurrent):
         self.modulated_values = copy.copy(self.values[0])
         self.active = 0
 
-    def activate(self, inputs):
+    def activate(self, inputs, is_update = True):
         if len(self.input_nodes) != len(inputs):
             raise RuntimeError("Expected {0:n} inputs, got {1:n}".format(len(self.input_nodes), len(inputs)))
 
@@ -92,17 +92,21 @@ class ModRecurrent(Recurrent):
             elif(self.config.evoparam_mode == 'local'):
                 self.modulated_values[node] += m_d
 
-        for node, modulatory, activation, aggregation, bias, response, links in self.node_evals:
-            for i, w in links:
-                update_val = math.tanh (self.modulated_values[node] / 2.0) * \
-                            self.global_params['eta'] * \
-                            (
-                                self.global_params['a'] * ivalues[i] * ovalues[node] + \
-                                self.global_params['b'] * ivalues[i] + \
-                                self.global_params['c'] * ovalues[node] + \
-                                self.global_params['d'] \
-                            )
-                weight_change(self, i, node, update_val)
+        if(is_update):
+            for node, modulatory_ratio, activation, aggregation, bias, response, links in self.node_evals:
+                for i, w, eta, a, b, c, d, m_d in links:
+                    if(self.config.evoparam_mode == 'global'): #グローバル値を利用するモードならば、各パラメータをグローバル値で上書きして計算に用いる。ローカル値利用モードならばこの処理は不要なのでスキップする
+                        a, b, c, d, eta = self.global_params['a'], self.global_params['b'], self.global_params['c'], self.global_params['d'], self.global_params['eta']
+                    #Soltoggioの設定に基づいて重みを更新
+                    update_val = math.tanh (self.modulated_values[node] / 2.0) * \
+                                eta * \
+                                (
+                                    a * ivalues[i] * ovalues[node] + \
+                                    b * ivalues[i] + \
+                                    c * ovalues[node] + \
+                                    d \
+                                )
+                    weight_change(self, i, node, update_val)
 
         return [ovalues[i] for i in self.output_nodes]
 
