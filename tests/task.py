@@ -2,7 +2,6 @@ from matplotlib.pyplot import hist
 from modneat import visualize
 import os
 import copy
-import gym
 import time
 
 class xor:
