@@ -30,7 +30,7 @@ class ModRecurrent:
 
         self.modulate_values = copy.copy(self.values[0])
         self.modulated_values = copy.copy(self.values[0])
-        self.activate = 0
+        self.active = 0
 
     @staticmethod
     def genome_type():
