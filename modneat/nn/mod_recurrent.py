@@ -136,8 +136,8 @@ class ModRecurrent(Recurrent):
             node = genome.nodes[node_key]
             activation_function = genome_config.activation_defs.get(node.activation)
             aggregation_function = genome_config.aggregation_function_defs.get(node.aggregation)
-            node_evals.append((node_key, node.modulatory, activation_function, aggregation_function, node.bias, node.response, inputs))
+            node_evals.append((node_key, node.modulatory_ratio, activation_function, aggregation_function, node.bias, node.response, inputs))
 
         global_params = genome.global_params[0].__dict__
 
-        return ModExHebbRNN(genome_config.input_keys, genome_config.output_keys, node_evals, global_params)
+        return ModRecurrent(genome_config.input_keys, genome_config.output_keys, node_evals, global_params)
