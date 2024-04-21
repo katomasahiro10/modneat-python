@@ -83,10 +83,14 @@ class ModRecurrent(Recurrent):
                 raise RuntimeError("modulatory_mode must be 'bool' or 'float'")
 
         # Caliculate modulated_values of each node
-        for node, modulatory, act_func, agg_func, bias, response, links in self.node_evals:
-            self.modulated_values[node] = self.global_params['m_d']
-            for i, w in links:
+        for node, modulatory_ratio, act_func, agg_func, bias, response, links in self.node_evals:
+            self.modulated_values[node] = 0.0
+            for i, w, eta, a, b, c, d, m_d in links:
                 self.modulated_values[node] += self.modulate_values[i] * w
+            if(self.config.evoparam_mode == 'global'):
+                self.modulated_values[node] += self.global_params['m_d']
+            elif(self.config.evoparam_mode == 'local'):
+                self.modulated_values[node] += m_d
 
         for node, modulatory, activation, aggregation, bias, response, links in self.node_evals:
             for i, w in links:
