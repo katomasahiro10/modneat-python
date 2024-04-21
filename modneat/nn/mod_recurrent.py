@@ -63,15 +63,24 @@ class ModRecurrent(Recurrent):
             ivalues[i] = v
             ovalues[i] = v
 
-        for node, modulatory, activation, aggregation, bias, response, links in self.node_evals:
+        for node, modulatory_ratio, activation, aggregation, bias, response, links in self.node_evals:
             node_inputs = [ivalues[i] * w for i, w in links]
             s = aggregation(node_inputs)
-            if(not modulatory):
-                ovalues[node] = activation(bias + response * s)
-                self.modulate_values[node] = 0.0
-            elif(modulatory):
-                ovalues[node] = 0.0
-                self.modulate_values[node] = activation(bias + response * s)
+
+            assert modulatory_ratio >= 0.0 and modulatory_ratio <= 1.0, "ERROR:modulatory_ratio must be between 0.0 and 1.0"
+
+            if(self.config.modulatory_mode == 'bool'):
+                if(modulatory_ratio > 0.5):
+                    ovalues[node] = 0.0
+                    self.modulate_values[node] = activation(bias + response * s)
+                else:
+                    ovalues[node] = activation(bias + response * s)
+                    self.modulate_values[node] = 0.0
+            elif(self.config.modulatory_mode == 'float'):
+                ovalues[node] = activation(bias + response * s) * (1.0 - modulatory_ratio)
+                self.modulate_values[node] = activation(bias + response * s) * modulatory_ratio
+            else:
+                raise RuntimeError("modulatory_mode must be 'bool' or 'float'")
 
         # Caliculate modulated_values of each node
         for node, modulatory, act_func, agg_func, bias, response, links in self.node_evals:
