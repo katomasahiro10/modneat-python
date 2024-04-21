@@ -83,10 +83,11 @@ if __name__ == '__main__':
     # Load task module from current working directory
     local_dir = os.getcwd()
     sys.path.append(local_dir)
+    print("実行ディレクトリ: ", local_dir)
     try:
         import task
-    except:
-        print("Error: task.py not found in current directory.")
+    except ImportError as e:
+        print(f"Error in run.py: {e} \nCould not import task module.")
         sys.exit()
 
     NETWORK_TYPE = eval('modneat.nn.' + args.network)
