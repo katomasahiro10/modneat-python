@@ -12,6 +12,7 @@ class ModRecurrent:
         self.node_evals = node_evals
         self.original_node_evals = copy.deepcopy(self.node_evals)
         self.global_params = global_params
+        self.config = config
 
         self.values = [{}, {}]
         for v in self.values:
@@ -20,7 +21,7 @@ class ModRecurrent:
 
             for node, ignored_modulatory_ratio, ignored_activation, ignored_aggregation, ignored_bias, ignored_response, links in self.node_evals:
                 v[node] = 0.0
-                for i, w in links: #NOTE: linksは対応する各ノードに対する入力リンクのリスト. iは入力ノード, wは重み
+                for i, w, *_ in links: #NOTE: linksは対応する各ノードに対する入力リンクのリスト. iは入力ノード, wは重み
                     # links = [
                     #    (input_node_id, weight),
                     #    (input_node_id, weight),
@@ -63,7 +64,7 @@ class ModRecurrent:
             ovalues[i] = v
 
         for node, modulatory_ratio, activation, aggregation, bias, response, links in self.node_evals:
-            node_inputs = [ivalues[i] * w for i, w in links]
+            node_inputs = [ivalues[i] * w for i, w, *_ in links]
             s = aggregation(node_inputs)
 
             assert modulatory_ratio >= 0.0 and modulatory_ratio <= 1.0, "ERROR:modulatory_ratio must be between 0.0 and 1.0"
@@ -126,9 +127,9 @@ class ModRecurrent:
                 continue
 
             if o not in node_inputs:
-                node_inputs[o] = [(i, cg.weight)]
+                node_inputs[o] = [(i, cg.weight, cg.eta, cg.a, cg.b, cg.c, cg.d, cg.m_d)]
             else:
-                node_inputs[o].append((i, cg.weight))
+                node_inputs[o].append((i, cg.weight, cg.eta, cg.a, cg.b, cg.c, cg.d, cg.m_d))
 
         node_evals = []
         for node_key, inputs in node_inputs.items():
