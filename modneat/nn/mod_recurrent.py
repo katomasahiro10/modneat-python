@@ -31,13 +31,18 @@ class ModRecurrent(Recurrent):
 
         self.modulate_values = copy.copy(self.values[0])
         self.modulated_values = copy.copy(self.values[0])
-
         self.activate = 0
-
 
     @staticmethod
     def genome_type():
         return ModGenome
+
+    def assert_type(self):
+        #a, b, c, d, etaをglobalに設定するか、localに設定するかに関するassrsion
+        if self.config.evoparam_mode == 'local':
+            assert self.config.genome_config.compatibility_global_param_coefficient == 0.0, "ERROR:evoparam_mode is 'local', but compatibility_global_param_coefficient is not 0.0"
+        elif self.config.evoparam_mode == 'global':
+            assert self.config.genome_config.compatibility_local_param_coefficient == 0.0, "ERROR:evoparam_mode is 'global', but compatibility_local_param_coefficient is not 0.0"
 
     def reset(self):
         self.node_evals = copy.deepcopy(self.original_node_evals)
