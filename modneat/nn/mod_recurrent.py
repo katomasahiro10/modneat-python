@@ -5,9 +5,8 @@ from modneat.genome import ModGenome
 from modneat.nn import Recurrent
 from modneat.nn.utils import weight_change
 
-class ModRecurrent(Recurrent):
+class ModRecurrent:
     def __init__(self, inputs, outputs, node_evals, global_params, config):
-        super().__init__(inputs, outputs, node_evals)
         self.input_nodes = inputs
         self.output_nodes = outputs
         self.node_evals = node_evals
@@ -140,4 +139,4 @@ class ModRecurrent(Recurrent):
 
         global_params = genome.global_params[0].__dict__
 
-        return ModRecurrent(genome_config.input_keys, genome_config.output_keys, node_evals, global_params)
+        return ModRecurrent(genome_config.input_keys, genome_config.output_keys, node_evals, global_params, config)
